@@ -24,6 +24,7 @@ use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\EventManager\EventInterface;
 use Zend\ModuleManager\ModuleManager;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use DoctrineDataFixtureModule\Command\ImportCommand;
 use DoctrineDataFixtureModule\Service\FixtureFactory;
@@ -74,6 +75,9 @@ class Module implements
             $importCommand = new ImportCommand();
             $importCommand->setEntityManager($em);
             $importCommand->setPath($paths);
+            if($importCommand instanceof ServiceLocatorAwareInterface) {
+                $importCommand->setServiceLocator($sm);
+            }
             ConsoleRunner::addCommands($cli);
             $cli->addCommands(array(
                 $importCommand

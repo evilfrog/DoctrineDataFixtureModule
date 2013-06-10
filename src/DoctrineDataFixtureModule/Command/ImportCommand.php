@@ -30,6 +30,10 @@ use Symfony\Component\Console\Command\Command,
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
+
 /**
  * Command for generate migration classes by comparing your current database schema
  * to your mapping information.
@@ -39,11 +43,16 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
  */
-class ImportCommand extends Command
+class ImportCommand extends Command implements ServiceLocatorAwareInterface
 {
     protected $paths;
 
     protected $em;
+
+    /**
+     * @param ServiceLocatorInterface
+     */
+    protected $services;
 
     const PURGE_MODE_TRUNCATE = 2;
 
@@ -86,5 +95,21 @@ EOT
     public function setEntityManager($em)
     {
         $this->em = $em;
+    }
+
+    /**
+     * @param ServiceLocatorInterface
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->services = $serviceLocator;
+    }
+
+    /**
+     * @return ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->services;
     }
 }
