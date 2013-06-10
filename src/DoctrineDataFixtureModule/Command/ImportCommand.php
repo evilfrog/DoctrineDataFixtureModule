@@ -84,7 +84,16 @@ EOT
         foreach($this->paths as $key => $value) {
             $loader->loadFromDirectory($value);
         }
-        $executor->execute($loader->getFixtures(), $input->getOption('append'));
+
+        $fixtures = $loader->getFixtures();
+        if($this->services instanceof ServiceLocatorInterface) {
+            foreach($fixtures as $fixture) {
+                if($fixture instanceof ServiceLocatorAwareInterface) {
+                    $fixture->setServiceLocator($this->getServiceLocator());
+                }
+            }
+        }
+        $executor->execute($fixtures, $input->getOption('append'));
     }
 
     public function setPath($paths) 
